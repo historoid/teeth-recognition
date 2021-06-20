@@ -1,0 +1,10 @@
+# GitHubに上げたくないもの
+
+# ファイル
+.DS_Store
+
+# フォルダ
+.ipynb_checkpoints/
+img/
+data/
+playground/img/
