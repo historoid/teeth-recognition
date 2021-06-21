@@ -1,0 +1,41 @@
+はじめにやっておくこと
+
+1. Web上でリポジトリを作る。
+2. リポジトリのURLをコピーする。（クローンする）
+3. git clone xxxx ← これでローカルリポジトリが作られる。
+
+ローカルリポジトリにユーザを設定する。
+1. git config user.name 'xxxx'
+2. git config user.email 'xxxx'
+3. git config --global とするとその他のリポジトリでもユーザが同じく設定される。
+
+今どんなブランチがあるのかを確認する
+1. git branch
+
+新しいブランチを切る
+1. git checkout -b 'xxxx'
+
+リポジトリ内のファイルを編集する。変更を確認する。
+1. git status
+
+「ステージングエリアに変更が反映されてないよ」と出るので、ステージに追加する
+1. git add xxxx
+
+ステージングエリアからコミットする
+1. git commit -m 'xxxx' ← -m '' でコメントを書く
+
+リモートに変更を反映する。push の前に必ずpull しておくこと。
+リモートからpull することで最新のリモートをローカルとマージできる。
+そのあとにpush すれば、コンフリクトする可能性は低い。
+1. git pull {repo_xxxx} {branch_xxxx}
+2. ここで{repo_xxxx}はリモートリポのURLだが、origin と書いても良い。
+3. origin は短縮コードと呼ばれており、git remote -v で短縮コードに割り当てられているURLを確認することができる。
+
+リモートにpushする。
+1. git push {repo_xxxx} {branch_xxxx}
+
+リモートのブランチを確認する
+1. git branch --remote
+
+リモートのブランチを削除する
+1. git push --delete original {repo_xxxx}

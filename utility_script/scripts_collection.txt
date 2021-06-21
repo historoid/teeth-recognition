@@ -1,0 +1,92 @@
+blenderのバックグラウンド処理.&は最後に加えることで、bashバックグラウンドで実行される。
+$ blender -b /**blender file**/ -P /**python file**/ &
+
+
+正規表現を使ってファイル名を変換したもの。
+今ではpythonスクリプトでできるので念の為保存しているだけ。
+$ find /Users/seino/Documents/research/03_DeepLearning/img/64 -type f -name '*.png' -print | sort -R | head -10 | sed -e 's/ /\\ /g' -e 's/\[/\\\[/g' -e 's/\]/\\\]/g' | xargs -J% cp % /Users/seino/Downloads
+
+
+ファイル数が多すぎる場合、ひとつずつファイルを移動させる。
+1つのフォルダに10万以上あると、mv コマンドでエラーが出る。
+$ find xxx/ -name "*.csv" -print0 | xargs -0 -I {} mv {} yyy/
+
+
+AWSにファイルをアップロードする。ローカルマシンのターミナルで行う。
+scp -i **/**.pem ***/***.txt ***@***.amazonaws.com://home/***/
+フォルダごとアップロードする場合は
+scp -i xxxx.pem -r xxxx/xxxx/xxxx/ xxxx@xxxx.amazonaws.com://home/ubuntu/xxxxx/
+
+
+AWSのUbuntuにblenderをインストールする方法。
+$ sudo su でルートユーザーのアクセス許可を継承する。
+# passwd root でパスワード作成する。
+2回同じワードを入れて確認されるとパスワードが使えるようになる。
+# sudo apt-get update
+# sudo apt-get install blender でブレンダーのインストール。
+# passwd -d root で一時的なパスワードを消去する。
+# exit で rootアカウントからログアウトすると、userアカウントに戻る。
+
+
+S3にアップロードする
+# aws s3 cp 元ファイルのパス s3://seino/置く場所
+
+EC2にS3をマウントする。
+先にIAMのロールを作っておくこと。S3フルアクセスのロールがすでに作成してある。
+EC2インスタンス作成時に、IAMを割り当てておくと、以下の作業でs3fsの中でkey設定が必要なくなる。
+S3でも先にバケットを作成しておく。これには特に設定はない。パブリックアクセスの許可はいらない。
+EC2インスタンス(Ubuntu)にs3fsをインストールする。https://github.com/s3fs-fuse/s3fs-fuse
+$ sudo apt-get update
+$ sudo apt-get install build-essential git libfuse-dev libcurl4-openssl-dev libxml2-dev mime-support automake libtool pkg-config libssl-dev s3fs
+$ git clone https://github.com/s3fs-fuse/s3fs-fuse
+この段階で、ホームディレクトリに s3fs-fuse フォルダが出来ているはず。そのフォルダに移動する。
+$ cd s3fs-fuse/
+$ ./autogen.sh
+$ ./configure --prefix=/usr --with-openssl
+$ make
+$ sudo make install
+次にマウントする場所を作る。この時点で/mntというフォルダは出来ているが、わかりやすいようにホームディレクトリ化に作る。
+$ sudo mkdir -p ${HOME}/mnt/s3
+$ sudo chmod 777 ${HOME}/mnt/s3
+ユーザーIDを調べる。
+$ id ubuntu
+下記の表示が出るはず。
+uid=1000(ubuntu) gid=1000(ubuntu) groups=1000(ubuntu),4(adm),20(dialout),24(cdrom),25(floppy),27(sudo),29(audio),30(dip),44(video),46(plugdev),109(netdev),110(lxd),999(docker)
+マウントする。
+$  sudo /usr/bin/s3fs【<-configureで置いた場所による】 seino【<-バケット名】 ${HOME}/mnt/s3【<-マウント場所】 -o rw,allow_other,uid=1000,gid=1000,iam_role="seino-s3"【<-ロール名】
+これでマウント完了。
+$ df -h
+以上で確認。マウントされていれば、項目の中に s3fs があるはず。
+
+
+再起動時に自動的にマウントする記述。
+$ cd /etc/
+ここに rc.local というファイルが有るはず。
+$ sudo vim ./rc.local で編集する。
+#rc.local行の下に
+# s3fs mount to ${HOME}/mnt/s3
+sudo /usr/bin/s3fs seino ${HOME}/mnt/s3 -o rw,allow_other,uid=1000,gid=1000,iam_role="seino-s3"
+というように記述する。これで再起動時に上記スクリプトが実行される。
+マウントの自動化が出来なかったら、以下参照。
+https://haltaro.github.io/2018/07/15/ec2-s3
+
+aws-setup.sh の操作方法
+インスタンスを作ったら下記をmacで実行する。
+scp -i xxx.pem /***/***/aws-setup.sh ****@****.compute.amazonaws.com:/home/ubuntu/
+次に、インスタンスマシンで下記を実行。
+sudo ./aws-setup.sh
+自動でvimが開くので、書きを末尾に追加。
+export PATH=~/.local/bin:$PATH
+
+AWSのjupyter notebook に接続する。
+$ jupyter notebook password
+このコマンドでパスワードを聞かれるので入力する。
+$ cd ~
+$ mkdir ssl
+$ cd ssl
+$ openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout mykey.key -out mycert.pem
+$ jupyter notebook --certfile=~/ssl/mycert.pem --keyfile ~/ssl/mykey.key
+次にローカルマシンで下記を実行。
+$ ssh -i ~/mykeypair.pem -N -f -L 8888:localhost:8888 ubuntu@ec2-###-##-##-###.compute-1.amazonaws.com
+次に、https://localhost:8888 をブラウザで開く。
+セキュリティーエラーが出るので、Advanced を選ぶ。その後、はじめに入力したパスワードを入力するとjupyter notebook が表示される。

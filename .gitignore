@@ -4,19 +4,13 @@
 .DS_Store
 *.png
 *.jpg
-*.JPG
-*.pdf
+*.jpg
 *.tif
-*.doc
-*.docx
-Doc/rootkey.csv
+*.tiff
+*.ipynb_checkpoints
 
 # フォルダ
-/*.ipynb_checkpoints/
-/img/
-/data/
-/playground/
 /blender/
-/utility_script/
-/work/
-/temp/
+/data/
+/Doc/
+/playground/img/

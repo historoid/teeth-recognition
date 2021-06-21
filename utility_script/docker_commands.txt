@@ -1,0 +1,74 @@
+まずはDocker Hub でアカウントを作っておく。
+ターミナル上でDocker にログイン。
+1. docker login
+
+Docker Image をpull する。
+1. docker pull hello-world:latest
+
+現在ローカルにあるDocker Image を確認する。
+1. docker images
+
+コンテナを新しく作成する。
+1. docker run {container_xxxx}
+
+アクディブなコンテナを確認する
+1. docker ps
+
+停止中のコンテナも確認する。
+1. docker ps -a
+
+コンテナを作って、そのままログインする。
+1. docker run -it {image_xxxx} bash
+
+コンテナを起動したまま、抜け出す。
+Cntl-p → q
+
+コンテナ名を指定して、コンテナを作成する。
+1. docker run --name {xxx} -it {image_xxx} bash
+
+停止したコンテナを再起動する。
+1. docker restart {container_name}
+
+すでに作成してあるコンテナに入る。
+1. docker exec {contatiner_name}
+
+すでに作成してあるコンテナに入って、bash を使う。
+1. docke exec -it {container_name} bash
+
+新しくDocker Image を作成する。
+1. docker commit {original_container} {new_container}
+
+Docker Image のimage 名やタグ名を変更する。
+1. docker tag {old_image:old_tag} {new_image:new_tag}
+このとき、Docker Image 名をDocker Hub上のリポジトリの名称と同じにするのが良い。
+ユーザー名がtaromin で、リポジトリ名がmy-first-repo なら、Docker Image 名をtaromin/my-first-repo です。
+
+Docker Image をDocker Hub にアップロードする。
+1. docker push {image_name}
+
+Docker Image を削除する。
+1. docker rmi {image_name}
+
+Dockerfile からビルドする。
+1. docker build {path}
+
+名前をつけてビルドする。
+1. docker build -t {name:tag} {path}
+
+Docker Image を強制的に削除
+1. docker rmi -f {image_name}
+
+ポートを開いてDocker を起動する。
+1. docker run -p {host_port}:{container_port} {container_name} {docker_image}
+
+システムファイルをマウントする。
+1. docker run -v {host_volume}:{contatiner_volume} {docker_image}
+
+コンテナ名を指定する。
+1. docker run --name {container_name} {docker_image}
+
+実際に解析用のコンテナを作成する。
+1. docker run -p 8888:8888 -v ~/Documents/Research/mount_volume:/work --name my-lab 1eb7d7421624
+
+Re:View のDocker を使ってpdf を書き出す。
+docker run --rm -v {config.ymlがあるパス}:/work vvakame/review /bin/sh -c "cd /work && review-pdfmaker config.yml"
