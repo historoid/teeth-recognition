@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+    notebook:
+        image: jupyter/datascience-notebook
+        container_name: ds
+        ports:
+            - '8888:8888'
+            - '6006:6006'
+        environment:
+            - JUPYTER_ENABLE_LAB=yes
+        volumes:
+            - './work:/home/jovyan/work'
+        command: start-notebook.sh --NotebookApp.token=''
