@@ -1,0 +1,54 @@
+FROM  ubuntu:18.04
+
+ENV PYTHON_VERSION 3.6.9
+ENV HOME /root
+ENV PYTHON_ROOT $HOME/local/python-$PYTHON_VERSION
+ENV PATH $PYTHON_ROOT/bin:$PATH
+ENV PYENV_ROOT $HOME/.pyenv
+ENV DEBIAN_FRONTEND=noninteractive
+ENV TZ=Asia/Tokyo
+
+RUN ln -sf /usr/share/zoneinfo/Asia/Tokyo /etc/localtime \
+&& apt-get update -y \
+&& apt-get install -y \
+sudo \
+git \
+make \
+wget \
+curl \
+llvm \
+vim \
+build-essential \
+libbz2-dev \
+libdb-dev \
+libreadline-dev \
+libffi-dev \
+libgdbm-dev \
+liblzma-dev \
+libncursesw5-dev \
+libncurses5-dev \
+libsqlite3-dev \
+libssl-dev \
+zlib1g-dev \
+uuid-dev \
+xz-utils \
+tk-dev \
+&& git clone https://github.com/pyenv/pyenv.git $PYENV_ROOT \
+&& $PYENV_ROOT/plugins/python-build/install.sh \
+&& /usr/local/bin/python-build -v $PYTHON_VERSION $PYTHON_ROOT \
+&& rm -rf $PYENV_ROOT \
+&& apt update -y \
+&& apt install -y python3-pip \
+&& pip install --upgrade pip \
+&& pip install \
+jupyterlab \
+numpy \
+pandas \
+matplotlib \
+networkx \
+pyyaml \
+xlsxwriter \
+tornado \
+tensorflow \
+keras \
+&& mkdir work

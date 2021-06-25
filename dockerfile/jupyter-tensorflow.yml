@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+    notebook:
+        build:
+            context: '.'
+            dockerfile: 'jupyter-tensorflow-Dockerfile'
+        container_name: jupyter-tf
+        tty: true
+        ports:
+            - '8888:8888'
+            - '6006:6006'
+        # 以下はDockerfile側に記載
+        # environment:
+        #     PYTHON_VERSION: '3.6.9'
+        #     HOME: '/root'
+        #     PYTHON_ROOT: '${HOME}/local/python-${PYTHON_VERSION}'
+        #     PATH: '${PYTHON_ROOT}/bin:${PATH}'
+        #     PYENV_ROOT: '${HOME}/.pyenv'
+        #     JUPYTER_ENABLE_LAB: 'yes'
+        #     TZ : 'Asia/Tokyo'
+        #     DEBIAN_FRONTEND: 'noninteractive'
+        volumes:
+            - '../work:/work'
+        command: jupyter lab --ip=0.0.0.0 --allow-root --LabApp.token=""
