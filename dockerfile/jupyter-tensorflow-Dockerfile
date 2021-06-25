@@ -1,16 +1,17 @@
 FROM  ubuntu:18.04
 
-ENV PYTHON_VERSION 3.6.9
+ENV PYTHON_VERSION 3.8.10
 ENV HOME /root
 ENV PYTHON_ROOT $HOME/local/python-$PYTHON_VERSION
 ENV PATH $PYTHON_ROOT/bin:$PATH
+ENV PATH $HOME/.local/bin:$PATH
 ENV PYENV_ROOT $HOME/.pyenv
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=Asia/Tokyo
 
 RUN ln -sf /usr/share/zoneinfo/Asia/Tokyo /etc/localtime \
-&& apt-get update -y \
-&& apt-get install -y \
+&& apt update -y \
+&& apt install -y \
 sudo \
 git \
 make \
@@ -28,19 +29,23 @@ liblzma-dev \
 libncursesw5-dev \
 libncurses5-dev \
 libsqlite3-dev \
-libssl-dev \
+# libssl-dev \
+libssl1.0-dev \
+nodejs-dev \
+node-gyp \
 zlib1g-dev \
 uuid-dev \
 xz-utils \
 tk-dev \
+python3-pip \
+nodejs \
+npm \
 && git clone https://github.com/pyenv/pyenv.git $PYENV_ROOT \
 && $PYENV_ROOT/plugins/python-build/install.sh \
 && /usr/local/bin/python-build -v $PYTHON_VERSION $PYTHON_ROOT \
 && rm -rf $PYENV_ROOT \
-&& apt update -y \
-&& apt install -y python3-pip \
 && pip install --upgrade pip \
-&& pip install \
+&& pip install --user \
 jupyterlab \
 numpy \
 pandas \
@@ -50,5 +55,11 @@ pyyaml \
 xlsxwriter \
 tornado \
 tensorflow \
-keras \
+scikit-learn \
+jupyterlab_latex \
+autopep8 \
+&& npm install -g n \
+&& n lts \
+&& apt purge nodejs npm -y \
+&& apt autoremove -y\
 && mkdir work
