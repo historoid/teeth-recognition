@@ -58,6 +58,8 @@ tensorflow \
 scikit-learn \
 jupyterlab_latex \
 autopep8 \
+pydot \
+graphviz\
 && npm install -g n \
 && n lts \
 && apt purge nodejs npm -y \
