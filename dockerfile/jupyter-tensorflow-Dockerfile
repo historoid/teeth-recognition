@@ -40,6 +40,7 @@ tk-dev \
 python3-pip \
 nodejs \
 npm \
+graphviz \
 && git clone https://github.com/pyenv/pyenv.git $PYENV_ROOT \
 && $PYENV_ROOT/plugins/python-build/install.sh \
 && /usr/local/bin/python-build -v $PYTHON_VERSION $PYTHON_ROOT \
@@ -59,7 +60,6 @@ scikit-learn \
 jupyterlab_latex \
 autopep8 \
 pydot \
-graphviz\
 && npm install -g n \
 && n lts \
 && apt purge nodejs npm -y \
